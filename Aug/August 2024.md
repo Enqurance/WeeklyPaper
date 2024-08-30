@@ -1,6 +1,6 @@
 # August 2024
 
-#### [To Believe or Not to Believe Your LLM](https://arxiv.org/abs/2406.02543)
+## [To Believe or Not to Believe Your LLM](https://arxiv.org/abs/2406.02543)
 
 ##### Yasin Abbasi Yadkori, Ilja Kuzborskij, et al.
 
@@ -12,7 +12,7 @@ $$
 
 本文与Semantic Entropy、P(True)等方法进行了对比实验，但是本文只提供了在Gemini 1.0上的实验结果。
 
-#### [Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs](https://arxiv.org/abs/2406.15927)
+## [Semantic Entropy Probes: Robust and Cheap Hallucination Detection in LLMs](https://arxiv.org/abs/2406.15927)
 
 ##### Jannik Kossen, Jiatong Han, et al.
 
@@ -28,7 +28,7 @@ SEPs的训练是基于一组二元组的，每一个元组的形式为$(h_{l}^{p
 
 在本文中，所使用的隐藏层是输入最后一个Token后的隐藏层，以及输出前的第二个隐藏层。
 
-[Semantic Density: Uncertainty Quantification in Semantic Space for Large Language Models](https://arxiv.org/abs/2405.13845)
+## [Semantic Density: Uncertainty Quantification in Semantic Space for Large Language Models](https://arxiv.org/abs/2405.13845)
 
 ##### Xin Qiu, Risto Miikkulainen
 
@@ -64,3 +64,132 @@ SD估计
 针对$\vec{x}$的输出$\vec{y}_{*}$，本文使用多次采样估计语义密度。对于每一个$\vec{y}_{i}$，可以从模型中获得Token的概率，进而只需要对$\vec{y}_{i}$采样一次，随后用链式法则求解SD中的条件概率即可。在实现过程中，还有一些其他的细节可参考原文。
 
 ![image-20240827100119903](https://raw.githubusercontent.com/Enqurance/Figures/main/202408271001948.png)
+
+## [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/pdf/2306.05685)
+
+##### Lianming Zheng, Wei-Lin Chiang, et al.
+
+#### **Introduction**
+
+近年来，大语言模型的发展非常迅速。在基座模型的基础上，出现了许多根据人类偏好进行微调的模型，这些模型在开放式问答任务上的结果往往更受人们青睐。然而，模型与人类喜好的对齐程度似乎和模型在传统LLM数据集上的表现并不总是相关。这表明目前的研究中，评测LLM的数据集于人们对聊天模型的期待之间存在差异。
+
+本研究认为，造成这种差异的原因是人们仅仅评价LLM在一组有限任务上的核心能力造成的。例如，虽然LLaMA-13B在某些问答任务上表现的更好，但是人们可能会更偏好于Vicuna-13B的回答（该模型是一个在高质量对话上训练的模型）。这告诉我们，人们需要一个可扩展的、自动化的方法来评价LLM与人类偏好的对齐程度。
+
+为了解决这个问题，本文提出了两个包含人类打分的benchmarks，分别为MT-bench和Chatbot Arena。MT-bench是一系列开放问题，可以评估聊天机器人的多轮对话能力，以及推理和数学能力；Chatbot Arena则是一个在线平台，向用户展示匿名的模型回复，并且收集用户对于回复的喜好。
+
+另外，虽然人力是评估LLM是否贴近人类喜好的最佳标准，但是速度太慢并且成本较高。本研究认为使用最先进的模型（GPT-4）实现自动化评价是优秀的选择。本研究称这类方法为LLM-as-a-judge。本研究评价了该方法与人类评估的差异，并且发现了其中一些偏差。在解决这些偏差后，本文使用GPT-4在两个benchmarks上进行了评估，并且与人类评估进行了比较，得到了超过80%的一致程度。
+
+总的来说，本文有以下两点贡献：
+
+- 针对LLM-as-a-judge的系统学习
+- 提出了两个benchmarks，分别为MT-bench和Chatbot Arena，并且公布了其中部分数据
+
+#### **Benchmarks**
+
+本章节介绍了MT-bench和Chatbot Arena，前者是一个包含80个高质量多轮对话问题的数据集，而Chatbot Arena则是一个匿名的模型在线比拼平台。
+
+#### **LLM as a Judge**
+
+本章节介绍针对LLM as a Judge方法的研究。
+
+##### **LLM as a Judge的类别**
+
+本研究指出，有三种LLM as a Judge的方法：
+
+- 成对比较，即给出一个问题和两个回答，Judger需要决定哪一个更好（或是平局）
+- 问题打分，给出一个问题和一个回答，Judger需要对问题进行打分
+- 有参考的问题回答，给出一个问题一个回答，并且给出一个参考答案，Judger需要对回答进行打分
+
+##### **LLM as a Judge的优点和缺点**
+
+优点：规模化能力强。有一定的可解释性，效率高成本低
+
+缺点：本研究经过实验，指出了LLM as a Judge的一些缺点
+
+- 位置偏好，譬如在成对比较任务中，通过置换提示词本研究发现模型更偏好于选择位置靠前的回答
+- 冗余偏好，本研究发现LLM Judger更喜欢冗长的回答，尽管这些回答可能在内容上没有区别
+- 自我提升偏好，即LLM更偏向于选择自己生成的回复
+- 在数学和推理问题上，LLM的能力较为有限
+
+为了解决这些偏差，本研究对于每一项都提出了针对性的方法，例如使用位置交换、引入Few-Shot样本、引入CoT方法等
+
+##### **Multi-turn Judge**
+
+在MT-bench中，每一个问题都包含两轮对话，因此比较两个Chatbots时，如何展示两个模型的四条回复是一个关键问题。本研究提出将多轮提示词拆成两条提示词的方法，以及将所有对话内容都纳入上下文的方法，发现第二种方法更佳。
+
+##### Agreement Evaluation
+
+本章节主要介绍LLM as a Judge和人类评估之间的一致性（Aggrement）
+
+在MT-bench中，使用6个模型对所有问题进行了生成，并且邀请了58位专家级的标注人员。本研究令LLM Judger评估了所有的生成结果，每位人类标注人员则各自评估了20条标注结果。
+
+在Chatbot Arena中，寻阿泽了3000条数据，覆盖了多款模型。本研究使用LLM Judger和人类评分来进行一致性评估。
+
+本研究定义两种判断之间的一致程度（agreement）为两种不同的Judger之间对于随机选择问题持相同判断的比例。具体解释见附表。下面将介绍本研究的一些发现。
+
+##### GPT-4 Judger和人类Judger之间存在高一致程度
+
+在MT-bench上，GPT-4和人类专家之间存在较高的一致程度。在没有平局的情况下，GPT-4 Judger和人类的一致程度高达85%，这比人类内部的一致程度更高（为了防止困惑，此处可以参考Appendix 5）。
+
+除此之外，本研究还发现，GPT-4 Judger在Single、Pairwise方法上和人类评估的一致程度也较高，说明GPT-4在座位LLM Judger时有不错的鲁棒性。在解析分析上，本研究也发现当模型之间的表现差异较大时，GPT-4 Judger依旧能保持和人类评估较高的一致程度（与此同时其他模型的表现发生下降）
+
+##### 不同Judges下的胜率（Win Rates）
+
+胜率指的是，选定一个模型A，模型A的回复在评估时比其他模型的回复更好的概率的平均值。在MT-bench和Chatbot Arena下，大部分的LLM Judger在评价某一模时，得到的该模型的胜率和人类评价保持较高的一致程度。而在MT-bench上的表现则说明GPT-4的在每一项类别中的表现都达到了最佳（Writing、Roleplay等）
+
+#### 人类偏好Benchmark和标准Benchmark
+
+MT-bench和Chatbot Arena是对当前LLM基准测试的有益补充。本研究的进一步实验表明，在一些高质量的小型对话数据集上的训练后的模型有更强的生成人类偏好内容的能力（用GPT-4来评判），但并不能提高这些模型在MMLU等传统Benchmark上的表现。同时，没有一个Benchmark能够决定哪款模型的综合质量是最高的，因此综合性的评价指标非常重要。
+
+#### 讨论
+
+在本文的最后，讨论了本研究的一些局限性、数据的搜集和开源、社会影响和未来的研究方向等问题
+
+#### 总结
+
+本文对LLM as a Judge的合理性进行了讨论，通过设计详细的实验与分析方法，本文发现将LLM作为Judge是可靠的，尤其是最先进的模型能够与人类评估达成高度一致。
+
+## [Towards Uncertainty-Aware Language Agent](https://aclanthology.org/2024.findings-acl.398/)
+
+#### Introduction
+
+语言代理（Language Agents）利用LLM与外部世界（例如工具）一并观察、处理、完成任务，这些Agents在很多任务上都取得了性能上的重大突破。不过，尽管这些Agents利用外部机制提高了输出的可验证性，但是这样的设计在本质上浪费了LLM内部的隐性知识。然而实际上，通过对预训练模型的探索，人们发现模型本身具备不错的解决各类问题的能力。
+
+在此基础上，本研究认为更有效的设计应当更好地利用模型的内部知识和外部机制。因此，本研究为模型引入了不确定性估计方法，以规范模型对外部帮助的使用。本研究提出了一个**不确定性感知的LLM框架**，并且在多个模型上进行了实验。本研究的主要贡献如下：
+
+- 本研究提出了一个语言Agent框架，该框架第一次将不确定性估计集成到了推理过程中
+- 本研究使用该框架进行了广泛的实验，并且发现该框架在多个方面都提高了推理的性能
+
+#### Uncertainty-Aware Language Agent
+
+本章节介绍了本研究所提出的不确定性感知的语言代理。
+
+给出一个输入问题，Agent可能会进行三类尝试，每一类尝试都包括一个思考（thought）、动作（action）和观察（observation），这与ReAct类似。Agent会根据当前步骤的结果决定下一步骤的行动。
+
+随后，介绍了本文所使用的不确定性估计方法。本文所采取的不确定性方法根据回答的格式进行调整（单个Token生成/自由式生成）
+
+针对自由生成，输出会包含n个token以及他们的对数概率，本研究在对数概率上使用softmax函数，并且采用了五种方法来计算不确定性。
+
+针对单一token生成，本研究则直接使用该token的对数不确定性。
+
+另外，本文也引入了一种针对多次推理的不确定性估计方法。该方法针对每一个问题进行多次采样得到答案簇，随后通过计算当前问题在问题簇中的包含情况来确定不确定性。
+
+#### Experiments
+
+本章节介绍了UALA（Uncertainty Aware Language agent）相关的实验设置，并且介绍了实验的结果。
+
+本研究选取了三个QA数据集，分别是HotpotQA、StrategyQA和MMLU，并且选取了Wikipedia和Google Search作为LLM所使用的外部工具。
+
+本研究在ChatGPT和LLaMA-2上进行了实验，并且与Standard、Chain-of-Thought、Self-Consistency和ReAct等方法进行了比较，并且当无法在这些方法上得到答案时，会退回到CoT或者是ReAct。相关的实验结果如下表所示。
+
+![image-20240830194238935](https://raw.githubusercontent.com/Enqurance/Figures/main/202408301942792.png)
+
+本研究在ChatGPT上进行了实验，并且指出在ChatGPT上，正确的答案的平均不确定性更低。
+
+本研究还发现，在小型号的模型上进行实验时，UALA所得到的性能提升更加显著。这是符合预期的，因为大参数模型进行了更加充分的学习从而对知识更有信心。
+
+最后，本研究还将UALA与微调模型Agent进行了比较。本研究在HotpotQA和StrategyQA上，模仿FireAct进行了采样，并且对ChatGPT和LLaMA模型进行了微调。实验发现，UALA-S仍旧取得了最优的实验结果。本研究指出，当训练数据有限时，UALA的成本更低且效果更好。
+
+#### Conclusion
+
+本研究提出了第一个将LLM不确定性估计引入到LLM Agent工作流中的框架UALA，并且设计了实验证明该框架在一些开放问答数据集上有更优的表现。
